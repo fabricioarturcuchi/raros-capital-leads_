@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raros Capital - Coleta de Leads com Firebase</title>
+  <style>
+    :root {
+      --dourado: #bfa34a;
+      --dourado-escuro: #8c7b2a;
+      --preto: #1d1d1d;
+      --branco: #ffffff;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--branco);
+      padding: 20px;
+      color: var(--preto);
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: var(--branco);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      border: 2px solid var(--dourado);
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 25px auto;
+      max-width: 180px;
+      height: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: var(--preto);
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 700;
+      color: var(--preto);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 2px solid var(--dourado);
+      font-weight: 600;
+    }
+
+    input:focus {
+      border-color: var(--dourado-escuro);
+      outline: none;
+      box-shadow: 0 0 5px var(--dourado-escuro);
+    }
+
+    button {
+      background-color: var(--dourado);
+      color: var(--branco);
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+
+    button:hover {
+      background-color: var(--dourado-escuro);
+    }
+
+    .msg {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--dourado-escuro);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img class="logo" src="https://i.postimg.cc/wMPWky1K/Sem-t-tulo-removebg-preview.png" alt="Logo Raros Capital" />
+    <h1>Raros Capital - Consórcios</h1>
+    <form id="leadForm">
+      <label for="name">Nome completo *</label>
+      <input type="text" id="name" name="name" placeholder="Seu nome completo" required />
+
+      <label for="email">E-mail *</label>
+      <input type="email" id="email" name="email" placeholder="Seu e-mail" required />
+
+      <label for="phone">WhatsApp (com DDD) *</label>
+      <input type="tel" id="phone" name="phone" placeholder="(99) 99999-9999" maxlength="15" required />
+
+      <label for="valor">Valor total (R$) *</label>
+      <input type="text" id="valor" name="valor" placeholder="R$ 0,00" required />
+
+      <button type="submit">Solicitar Proposta</button>
+    </form>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
+      authDomain: "site-raros.firebaseapp.com",
+      projectId: "site-raros",
+      storageBucket: "site-raros.appspot.com",
+      messagingSenderId: "610375954172",
+      appId: "1:610375954172:web:6c1cf57ef39d6e93a1f179",
+      measurementId: "G-S3ZLSEE4GP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', e => {
+      let v = e.target.value.replace(/\D/g, '').slice(0,11);
+      v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+      v = v.replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+      e.target.value = v;
+    });
+
+    const valorInput = document.getElementById('valor');
+    valorInput.addEventListener('input', e => {
+      let v = e.target.value.replace(/\D/g, '');
+      v = (parseInt(v || 0) / 100).toFixed(2) + '';
+      v = v.replace('.', ',');
+      v = v.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      e.target.value = 'R$ ' + v;
+    });
+
+    const form = document.getElementById('leadForm');
+    const msg = document.getElementById('msg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nome = form.name.value.trim();
+      const email = form.email.value.trim();
+      const telefone = form.phone.value.trim();
+      let valorStr = form.valor.value.trim();
+
+      if (!nome || !email || !telefone || !valorStr) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+      }
+
+      valorStr = valorStr.replace(/[^\d,]/g, '').replace(',', '.');
+      const valor = parseFloat(valorStr);
+
+      if (isNaN(valor) || valor <= 0) {
+        alert("Informe um valor válido.");
+        return;
+      }
+
+      const lead = {
+        nome,
+        email,
+        telefone,
+        valor,
+        criadoEm: new Date().toISOString()
+      };
+
+      try {
+        await addDoc(collection(db, "leads"), lead);
+        msg.style.color = "var(--dourado-escuro)";
+        msg.textContent = "Solicitação enviada com sucesso! Obrigado.";
+        form.reset();
+      } catch (error) {
+        console.error("Erro ao enviar solicitação:", error);
+        msg.style.color = "red";
+        msg.textContent = "Erro ao enviar solicitação. Tente novamente.";
+      }
+    });
+  </script>
+</body>
+</html>
