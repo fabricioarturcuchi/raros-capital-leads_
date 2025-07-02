@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Leads Raros Capital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #bfa34a;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    #authSection {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-weight: bold;
+      margin-top: 10px;
+      background-color: #bfa34a;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="authSection">
+  <h2>Área Restrita</h2>
+  <p>Digite a senha para acessar os leads:</p>
+  <input type="password" id="adminPass" placeholder="Senha de acesso" />
+  <br>
+  <button onclick="authAdmin()">Entrar</button>
+</div>
+
+<div id="leadsSection" style="display:none;">
+  <h1>Leads Recebidos</h1>
+  <table id="leadsTable">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>WhatsApp</th>
+        <th>Valor (R$)</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
+    authDomain: "site-raros.firebaseapp.com",
+    projectId: "site-raros",
+    storageBucket: "site-raros.appspot.com",
+    messagingSenderId: "610375954172",
+    appId: "1:610375954172:web:6c1cf57ef39d6e93a1f179",
+    measurementId: "G-S3ZLSEE4GP"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.authAdmin = async function () {
+    const senha = document.getElementById('adminPass').value;
+    const senhaCorreta = "admin123"; // 🔐 troque por algo melhor
+
+    if (senha !== senhaCorreta) {
+      alert("Senha incorreta!");
+      return;
+    }
+
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('leadsSection').style.display = 'block';
+
+    const tabela = document.querySelector('#leadsTable tbody');
+    tabela.innerHTML = "<tr><td colspan='5'>Carregando...</td></tr>";
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "leads"));
+      let html = "";
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        html += `
+          <tr>
+            <td>${data.nome}</td>
+            <td>${data.email}</td>
+            <td>${data.telefone}</td>
+            <td>R$ ${Number(data.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td>${new Date(data.criadoEm).toLocaleString('pt-BR')}</td>
+          </tr>`;
+      });
+
+      tabela.innerHTML = html || "<tr><td colspan='5'>Nenhum lead encontrado.</td></tr>";
+    } catch (e) {
+      console.error("Erro ao buscar leads", e);
+      tabela.innerHTML = "<tr><td colspan='5'>Erro ao carregar dados.</td></tr>";
+    }
+  }
+</script>
+
+</body>
+</html>
