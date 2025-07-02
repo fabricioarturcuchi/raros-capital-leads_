@@ -38,6 +38,16 @@
       background-color: #f2f2f2;
     }
 
+    button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
     #authSection {
       text-align: center;
       margin-top: 100px;
@@ -49,14 +59,8 @@
       margin-top: 10px;
     }
 
-    button {
-      padding: 10px 20px;
-      font-weight: bold;
-      margin-top: 10px;
-      background-color: #bfa34a;
-      border: none;
-      color: white;
-      cursor: pointer;
+    .btn-excluir {
+      background-color: #d9534f;
     }
   </style>
 </head>
@@ -80,6 +84,7 @@
         <th>WhatsApp</th>
         <th>Valor (R$)</th>
         <th>Data</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -88,7 +93,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
@@ -105,7 +110,7 @@
 
   window.authAdmin = async function () {
     const senha = document.getElementById('adminPass').value;
-    const senhaCorreta = "admin123"; // 🔐 troque por algo melhor
+    const senhaCorreta = "Cuchi@rtur2015"; // Troque por senha real
 
     if (senha !== senhaCorreta) {
       alert("Senha incorreta!");
@@ -115,15 +120,21 @@
     document.getElementById('authSection').style.display = 'none';
     document.getElementById('leadsSection').style.display = 'block';
 
+    carregarLeads();
+  }
+
+  async function carregarLeads() {
     const tabela = document.querySelector('#leadsTable tbody');
-    tabela.innerHTML = "<tr><td colspan='5'>Carregando...</td></tr>";
+    tabela.innerHTML = "<tr><td colspan='6'>Carregando...</td></tr>";
 
     try {
       const querySnapshot = await getDocs(collection(db, "leads"));
       let html = "";
 
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+
         html += `
           <tr>
             <td>${data.nome}</td>
@@ -131,13 +142,27 @@
             <td>${data.telefone}</td>
             <td>R$ ${Number(data.valor).toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
             <td>${new Date(data.criadoEm).toLocaleString('pt-BR')}</td>
+            <td><button class="btn-excluir" onclick="excluirLead('${id}')">Excluir</button></td>
           </tr>`;
       });
 
-      tabela.innerHTML = html || "<tr><td colspan='5'>Nenhum lead encontrado.</td></tr>";
+      tabela.innerHTML = html || "<tr><td colspan='6'>Nenhum lead encontrado.</td></tr>";
     } catch (e) {
       console.error("Erro ao buscar leads", e);
-      tabela.innerHTML = "<tr><td colspan='5'>Erro ao carregar dados.</td></tr>";
+      tabela.innerHTML = "<tr><td colspan='6'>Erro ao carregar dados.</td></tr>";
+    }
+  }
+
+  window.excluirLead = async function (id) {
+    if (!confirm("Tem certeza que deseja excluir este lead?")) return;
+
+    try {
+      await deleteDoc(doc(db, "leads", id));
+      alert("Lead excluído com sucesso.");
+      carregarLeads();
+    } catch (error) {
+      console.error("Erro ao excluir lead:", error);
+      alert("Erro ao excluir lead.");
     }
   }
 </script>
