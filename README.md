@@ -11,4 +11,4 @@ Este projeto é um formulário de coleta de leads integrado com o Firebase Fires
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/SEU_USUARIO/raros-capital-leads.git
+git clone https://github.com/fabricioarturcuchi/raros-capital-leads.git
