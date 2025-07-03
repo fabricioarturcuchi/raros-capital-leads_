@@ -1,674 +1,646 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard - Leads Raros Capital</title>
-  <style>
-    :root {
-      --dourado: #bfa34a;
-      --dourado-escuro: #8c7b2a;
-      --preto: #1d1d1d;
-      --branco: #ffffff;
-      --fundo-claro: #f8f8f8;
-      --fundo-escuro: #121212;
-      --texto-escuro: #222;
-      --texto-claro: #ddd;
-    }
-    body {
-      margin: 0; padding: 20px;
-      font-family: Arial, sans-serif;
-      background-color: var(--fundo-claro);
-      color: var(--texto-escuro);
-      transition: background-color 0.3s, color 0.3s;
-    }
-    body.dark {
-      background-color: var(--fundo-escuro);
-      color: var(--texto-claro);
-    }
-    header {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    header h1 {
-      margin: 0 0 5px 0;
-      color: var(--dourado);
-    }
-    header h2 {
-      margin: 0;
-      font-weight: normal;
-      color: var(--dourado-escuro);
-    }
-    #temaToggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: var(--dourado);
-      border: none;
-      color: var(--branco);
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: background-color 0.3s;
-      z-index: 100;
-    }
-    #temaToggle:hover {
-      background-color: var(--dourado-escuro);
-    }
-    #totalCard {
-      background-color: var(--dourado);
-      color: var(--branco);
-      font-size: 1.2rem;
-      font-weight: 700;
-      padding: 15px 25px;
-      border-radius: 10px;
-      width: fit-content;
-      margin: 0 auto 30px auto;
-      box-shadow: 0 4px 15px rgba(139, 113, 36, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #totalCard.dark {
-      background-color: var(--dourado-escuro);
-    }
-    .dashboard {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 25px;
-    }
-    .chart-container {
-      background: var(--branco);
-      border: 2px solid var(--dourado);
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-      width: 320px;
-      transition: background-color 0.3s, border-color 0.3s;
-    }
-    body.dark .chart-container {
-      background: #1e1e1e;
-      border-color: var(--dourado-escuro);
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Raros Capital - Dashboard Leads</title>
+<style>
+  :root {
+    --bg-light: #f8f8f8;
+    --bg-dark: #121212;
+    --text-light: #000;
+    --text-dark: #eee;
+    --primary-color: #bfa34a;
+    --primary-dark: #8c7b2a;
+    --btn-bg: #d9534f;
+    --btn-bg-dark: #a33b36;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-light);
+    margin: 0; padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  body.dark {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  header h1 {
+    margin: 0;
+    color: var(--primary-color);
+  }
+  #totalCard {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: var(--primary-color);
+  }
+  #themeToggle {
+    cursor: pointer;
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  #authSection {
+    max-width: 400px;
+    margin: 150px auto;
+    text-align: center;
+  }
+  #authSection input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  #authSection button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    border-radius: 4px;
+  }
+  #dashboard {
+    display: none;
+  }
+  #importSection {
+    margin-bottom: 15px;
+  }
+  #importFile {
+    margin-left: 10px;
+  }
+  #buttonsExport {
+    margin-bottom: 15px;
+  }
+  #buttonsExport button {
+    margin-right: 10px;
+    background: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 10px 8px;
+    text-align: left;
+  }
+  th {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  body.dark tr:nth-child(even) {
+    background-color: #222;
+  }
+  select.status-select {
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-weight: bold;
+  }
+  button.btn {
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 6px 10px;
+    margin: 0 2px;
+  }
+  button.btn-edit {
+    background-color: #5cb85c;
+    color: white;
+  }
+  button.btn-delete {
+    background-color: #d9534f;
+    color: white;
+  }
+  button.btn-save {
+    background-color: #0275d8;
+    color: white;
+  }
+  button.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+  }
+  .input-edit {
+    width: 90%;
+    padding: 4px 6px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  .charts-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  canvas {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+    width: 100% !important;
+    max-width: 33vw;
+    height: 250px !important;
+  }
+  body.dark canvas {
+    background: #222;
+  }
+  @media (max-width: 900px) {
+    .charts-container {
+      flex-direction: column;
     }
     canvas {
-      display: block;
-      max-width: 100%;
-      height: 240px !important;
+      max-width: 100% !important;
+      height: 220px !important;
     }
-    #leadsSection {
-      max-width: 960px;
-      margin: 0 auto;
-      overflow-x: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-      color: inherit;
-      background: var(--branco);
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      transition: background-color 0.3s;
-    }
-    body.dark table {
-      background: #1e1e1e;
-    }
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      vertical-align: middle;
-    }
-    body.dark th, body.dark td {
-      border-color: #444;
-    }
-    th {
-      background-color: var(--dourado);
-      color: var(--branco);
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-    button.action-btn {
-      background: none;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      margin-right: 6px;
-      transition: transform 0.15s ease;
-    }
-    button.action-btn:hover {
-      transform: scale(1.2);
-    }
-    button.excluir-btn {
-      color: #d9534f;
-    }
-    button.salvar-btn {
-      color: #28a745;
-    }
-    button.cancelar-btn {
-      color: #6c757d;
-    }
-    select.status-select {
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 5px;
-      border: 1.5px solid var(--dourado);
-      background-color: var(--branco);
-      color: var(--preto);
-      transition: background-color 0.3s, border-color 0.3s;
-    }
-    body.dark select.status-select {
-      background-color: #333;
-      color: var(--texto-claro);
-      border-color: var(--dourado-escuro);
-    }
-    #buttonsBar {
-      max-width: 960px;
-      margin: 0 auto 25px auto;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    #buttonsBar button {
-      background-color: var(--dourado);
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      color: var(--branco);
-      font-weight: 700;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    #buttonsBar button:hover {
-      background-color: var(--dourado-escuro);
-    }
-    input[type="file"] {
-      display: none;
-    }
-    label.import-label {
-      cursor: pointer;
-      background-color: var(--dourado);
-      color: var(--branco);
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-weight: 700;
-      transition: background-color 0.3s;
-    }
-    label.import-label:hover {
-      background-color: var(--dourado-escuro);
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
+
+<div id="authSection">
+  <h2>Área Restrita - Raros Capital</h2>
+  <p>Digite a senha para acessar os leads:</p>
+  <input type="password" id="adminPass" placeholder="Senha de acesso" autocomplete="off" />
+  <button onclick="authAdmin()">Entrar 🔐</button>
+</div>
+
+<div id="dashboard">
   <header>
     <h1>Raros Capital</h1>
-    <h2>Relatório de Leads</h2>
+    <div id="totalCard">Total: R$ 0,00</div>
+    <button id="themeToggle" onclick="toggleTheme()">Tema Escuro</button>
   </header>
 
-  <button id="temaToggle" title="Alternar tema">🌙</button>
+  <section id="importSection">
+    <label for="importFile">Importar dados Excel:</label>
+    <input type="file" id="importFile" accept=".xlsx, .xls" />
+  </section>
 
-  <div id="totalCard">Valor Total: R$ 0,00</div>
+  <section id="buttonsExport">
+    <button id="exportPdfBtn">📄 Exportar PDF</button>
+    <button id="exportClientsBtn">👥 Exportar Clientes CSV</button>
+  </section>
 
-  <div class="dashboard">
-    <div class="chart-container">
-      <canvas id="chartBem"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartMes"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartValor"></canvas>
-    </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>WhatsApp</th>
+        <th>Valor (R$)</th>
+        <th>Data</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="leadsTableBody"></tbody>
+  </table>
+
+  <div class="charts-container">
+    <canvas id="chartValores"></canvas>
+    <canvas id="chartStatus"></canvas>
+    <canvas id="chartBemDesejado"></canvas>
   </div>
+</div>
 
-  <div id="buttonsBar">
-    <button id="exportPDFBtn">📄 Exportar PDF</button>
-    <button id="exportClientesBtn">👥 Exportar Clientes (CSV)</button>
-    <label for="importFile" class="import-label">📥 Importar Dados (Excel)</label>
-    <input type="file" id="importFile" accept=".xlsx,.xls" />
-  </div>
+<!-- Dependências -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  <div id="leadsSection">
-    <table id="leadsTable">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>WhatsApp</th>
-          <th>Valor (R$)</th>
-          <th>Status</th>
-          <th>Data</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  // Config Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
+    authDomain: "site-raros.firebaseapp.com",
+    projectId: "site-raros",
+    storageBucket: "site-raros.appspot.com",
+    messagingSenderId: "610375954172",
+    appId: "1:610375954172:web:6c1cf57ef39d6e93a1f179",
+    measurementId: "G-S3ZLSEE4GP"
+  };
 
-  <!-- Bibliotecas -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      updateDoc,
-      doc,
-      addDoc
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  // Variáveis globais
+  let leadsData = [];
+  let editingId = null;
+  const statusOptions = ["Novo", "Negociação", "Ganho", "Perdido"];
+  let chartValores = null, chartStatus = null, chartBemDesejado = null;
+  let darkTheme = false;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
-      authDomain: "site-raros.firebaseapp.com",
-      projectId: "site-raros",
-      storageBucket: "site-raros.appspot.com",
-      messagingSenderId: "610375954172",
-      appId: "1:610375954172:web:6c1cf57ef39d6e93a1f179",
-      measurementId: "G-S3ZLSEE4GP"
+  const authSection = document.getElementById('authSection');
+  const dashboard = document.getElementById('dashboard');
+  const totalCard = document.getElementById('totalCard');
+  const leadsTableBody = document.getElementById('leadsTableBody');
+  const importFile = document.getElementById('importFile');
+  const exportPdfBtn = document.getElementById('exportPdfBtn');
+  const exportClientsBtn = document.getElementById('exportClientsBtn');
+  const themeToggleBtn = document.getElementById('themeToggle');
+
+  // Escapa HTML para evitar injeção
+  function escapeHtml(text) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;',
     };
+    return text.replace(/[&<>"']/g, m => map[m]);
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  // Autenticação simples
+  window.authAdmin = async function() {
+    const senha = document.getElementById('adminPass').value.trim();
+    if (senha !== "Cuchi@rtur2015") {
+      alert("Senha incorreta!");
+      return;
+    }
+    authSection.style.display = 'none';
+    dashboard.style.display = 'block';
+    await carregarLeads();
+  };
 
-    const leadsTableBody = document.querySelector("#leadsTable tbody");
-    const totalCard = document.getElementById("totalCard");
-    const exportPDFBtn = document.getElementById("exportPDFBtn");
-    const exportClientesBtn = document.getElementById("exportClientesBtn");
-    const importFileInput = document.getElementById("importFile");
-    const temaToggle = document.getElementById("temaToggle");
+  // Carregar leads do Firestore
+  async function carregarLeads() {
+    leadsTableBody.innerHTML = `<tr><td colspan="7">Carregando...</td></tr>`;
+    try {
+      const querySnapshot = await getDocs(collection(db, "leads"));
+      leadsData = [];
+      querySnapshot.forEach(docSnap => {
+        leadsData.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      renderizarTabela();
+      atualizarDashboard();
+    } catch (e) {
+      leadsTableBody.innerHTML = `<tr><td colspan="7">Erro ao carregar dados.</td></tr>`;
+      console.error("Erro ao buscar leads", e);
+    }
+  }
 
-    let leads = [];
-    let editRowId = null;
-    let chartBem, chartMes, chartValor;
+  // Renderizar tabela leads
+  function renderizarTabela() {
+    if (leadsData.length === 0) {
+      leadsTableBody.innerHTML = `<tr><td colspan="7">Nenhum lead encontrado.</td></tr>`;
+      return;
+    }
+    leadsTableBody.innerHTML = '';
+    leadsData.forEach(lead => {
+      const isEditing = (editingId === lead.id);
+      const createdAt = lead.criadoEm ? new Date(lead.criadoEm).toLocaleString('pt-BR') : '';
+      leadsTableBody.insertAdjacentHTML('beforeend', `
+        <tr data-id="${lead.id}">
+          <td>${isEditing ? `<input class="input-edit" type="text" value="${escapeHtml(lead.nome)}" data-field="nome">` : escapeHtml(lead.nome)}</td>
+          <td>${isEditing ? `<input class="input-edit" type="email" value="${escapeHtml(lead.email)}" data-field="email">` : escapeHtml(lead.email)}</td>
+          <td>${isEditing ? `<input class="input-edit" type="text" value="${escapeHtml(lead.telefone)}" data-field="telefone">` : escapeHtml(lead.telefone)}</td>
+          <td>${isEditing ? `<input class="input-edit" type="number" step="0.01" value="${lead.valor || 0}" data-field="valor">` : `R$ ${Number(lead.valor || 0).toLocaleString('pt-BR', {minimumFractionDigits:2})}`}</td>
+          <td>${createdAt}</td>
+          <td>
+            ${isEditing 
+              ? `<select class="status-select" data-field="status">${statusOptions.map(s => `<option value="${s}" ${lead.status===s?'selected':''}>${s}</option>`).join('')}</select>`
+              : `${lead.status || "Novo"}`
+            }
+          </td>
+          <td>
+            ${isEditing
+              ? `<button class="btn btn-save" title="Salvar 💾" onclick="salvarEdicao('${lead.id}')">💾</button>
+                 <button class="btn btn-cancel" title="Cancelar ❌" onclick="cancelarEdicao()">❌</button>`
+              : `<button class="btn btn-edit" title="Editar ✏️" onclick="editarLead('${lead.id}')">✏️</button>
+                 <button class="btn btn-delete" title="Excluir 🗑️" onclick="excluirLead('${lead.id}')">🗑️</button>`
+            }
+          </td>
+        </tr>
+      `);
+    });
+  }
 
-    // Alternar tema
-    temaToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      if(document.body.classList.contains("dark")){
-        temaToggle.textContent = "☀️";
+  // Editar lead
+  window.editarLead = function(id) {
+    if(editingId) {
+      alert('Já existe um lead sendo editado.');
+      return;
+    }
+    editingId = id;
+    renderizarTabela();
+  };
+
+  // Cancelar edição
+  window.cancelarEdicao = function() {
+    editingId = null;
+    renderizarTabela();
+  };
+
+  // Salvar edição
+  window.salvarEdicao = async function(id) {
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    if (!row) return alert("Linha não encontrada");
+
+    const inputs = row.querySelectorAll('.input-edit, .status-select');
+    let updatedData = {};
+    inputs.forEach(input => {
+      const field = input.dataset.field;
+      if (field === 'valor') {
+        updatedData[field] = parseFloat(input.value) || 0;
       } else {
-        temaToggle.textContent = "🌙";
+        updatedData[field] = input.value.trim();
       }
     });
 
-    // Carregar leads do Firestore
-    async function carregarLeads() {
-      leadsTableBody.innerHTML = "<tr><td colspan='7'>Carregando...</td></tr>";
+    try {
+      await updateDoc(doc(db, "leads", id), updatedData);
+      editingId = null;
+      await carregarLeads();
+      alert("Lead atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar lead:", error);
+      alert("Erro ao atualizar lead.");
+    }
+  };
+
+  // Excluir lead
+  window.excluirLead = async function(id) {
+    if (!confirm("Tem certeza que deseja excluir este lead?")) return;
+    try {
+      await deleteDoc(doc(db, "leads", id));
+      await carregarLeads();
+      alert("Lead excluído com sucesso.");
+    } catch (error) {
+      console.error("Erro ao excluir lead:", error);
+      alert("Erro ao excluir lead.");
+    }
+  };
+
+  // Atualizar dashboard: total e gráficos
+  function atualizarDashboard() {
+    // Total
+    const total = leadsData.reduce((sum, lead) => sum + (Number(lead.valor) || 0), 0);
+    totalCard.textContent = `Total: R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}`;
+
+    // Dados para gráficos
+    const statusCount = { Novo: 0, Negociação: 0, Ganho: 0, Perdido: 0 };
+    const valoresPorStatus = { Novo: 0, Negociação: 0, Ganho: 0, Perdido: 0 };
+    leadsData.forEach(l => {
+      const st = l.status || "Novo";
+      statusCount[st] = (statusCount[st] || 0) + 1;
+      valoresPorStatus[st] = (valoresPorStatus[st] || 0) + (Number(l.valor) || 0);
+    });
+
+    // Atualizar gráficos
+    atualizarGrafico(chartStatus, Object.keys(statusCount), Object.values(statusCount), 'Distribuição por Status', 'bar');
+    atualizarGrafico(chartValores, Object.keys(valoresPorStatus), Object.values(valoresPorStatus), 'Valores por Status', 'bar');
+    
+    // Gráfico adicional - leads por data (exemplo simples)
+    const datasCount = {};
+    leadsData.forEach(l => {
+      const d = l.criadoEm ? new Date(l.criadoEm).toLocaleDateString('pt-BR') : 'Sem Data';
+      datasCount[d] = (datasCount[d] || 0) + 1;
+    });
+    atualizarGrafico(chartBemDesejado, Object.keys(datasCount), Object.values(datasCount), 'Leads por Data', 'line');
+  }
+
+  // Função para criar/atualizar gráficos
+  function atualizarGrafico(chartObj, labels, data, label, type) {
+    if(chartObj) {
+      chartObj.data.labels = labels;
+      chartObj.data.datasets[0].data = data;
+      chartObj.update();
+    } else {
+      const ctx = label === 'Distribuição por Status' ? document.getElementById('chartStatus').getContext('2d')
+        : label === 'Valores por Status' ? document.getElementById('chartValores').getContext('2d')
+        : document.getElementById('chartBemDesejado').getContext('2d');
+
+      chartObj = new Chart(ctx, {
+        type,
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data,
+            backgroundColor: [
+              '#bfa34a', '#f0ad4e', '#5cb85c', '#d9534f'
+            ],
+            borderColor: '#555',
+            borderWidth: 1,
+            fill: type === 'line' ? false : true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            tooltip: { enabled: true }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+
+      if(label === 'Distribuição por Status') chartStatus = chartObj;
+      else if(label === 'Valores por Status') chartValores = chartObj;
+      else chartBemDesejado = chartObj;
+    }
+  }
+
+  // Importar Excel
+  importFile.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function(evt) {
       try {
-        const querySnapshot = await getDocs(collection(db, "leads"));
-        leads = [];
-        querySnapshot.forEach(docSnap => {
-          leads.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        renderTabela();
-        atualizarTotal();
-        atualizarGraficos();
+        const data = evt.target.result;
+        const workbook = XLSX.read(data, {type: 'binary'});
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, {defval: ''});
+
+        if(!jsonData.length) {
+          alert('Planilha vazia ou inválida.');
+          return;
+        }
+
+        // Confirmar importação
+        if(!confirm(`Importar ${jsonData.length} leads? Dados atuais serão mantidos.`)) return;
+
+        // Adiciona leads no Firestore
+        for(let lead of jsonData) {
+          // Validar e mapear campos
+          let docData = {
+            nome: lead.Nome || lead.nome || '',
+            email: lead.Email || lead.email || '',
+            telefone: lead.WhatsApp || lead.telefone || '',
+            valor: Number(lead.Valor || lead.valor) || 0,
+            criadoEm: lead.Data ? new Date(lead.Data).toISOString() : new Date().toISOString(),
+            status: lead.Status || "Novo"
+          };
+          // Use addDoc para criar novos, mas para simplificar deixaremos aqui somente carregar leads atualizados
+          // Adicionar no Firestore
+          await importLead(docData);
+        }
+        alert('Importação concluída.');
+        importFile.value = '';
+        await carregarLeads();
       } catch (error) {
-        console.error("Erro ao carregar leads:", error);
-        leadsTableBody.innerHTML = "<tr><td colspan='7'>Erro ao carregar leads.</td></tr>";
+        console.error('Erro ao importar Excel:', error);
+        alert('Erro ao importar arquivo.');
       }
+    };
+    reader.readAsBinaryString(file);
+  });
+
+  // Função para importar um lead no Firestore
+  async function importLead(data) {
+    // Aqui usamos addDoc em vez de update para criar novo
+    const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js");
+    try {
+      await addDoc(collection(db, "leads"), data);
+    } catch(e) {
+      console.error("Erro ao importar lead:", e);
+    }
+  }
+
+  // Exportar CSV somente clientes
+  exportClientsBtn.addEventListener('click', () => {
+    if(leadsData.length === 0) {
+      alert("Nenhum dado para exportar.");
+      return;
+    }
+    const clientes = leadsData.map(lead => ({
+      Nome: lead.nome || '',
+      Email: lead.email || '',
+      WhatsApp: lead.telefone || '',
+      Valor: lead.valor || 0,
+      Data: lead.criadoEm ? new Date(lead.criadoEm).toLocaleString('pt-BR') : '',
+      Status: lead.status || "Novo"
+    }));
+
+    const csvContent = [
+      Object.keys(clientes[0]).join(','),
+      ...clientes.map(c => Object.values(c).map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'clientes.csv';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  // Exportar PDF
+  exportPdfBtn.addEventListener('click', async () => {
+    if(leadsData.length === 0) {
+      alert("Nenhum dado para exportar.");
+      return;
     }
 
-    // Renderizar tabela
-    function renderTabela() {
-      if(leads.length === 0){
-        leadsTableBody.innerHTML = "<tr><td colspan='7'>Nenhum lead encontrado.</td></tr>";
-        return;
-      }
-      leadsTableBody.innerHTML = "";
-      leads.forEach(lead => {
-        if(editRowId === lead.id){
-          // Linha editando
-          leadsTableBody.innerHTML += `
-          <tr data-id="${lead.id}">
-            <td><input type="text" class="edit-nome" value="${lead.nome}" /></td>
-            <td><input type="email" class="edit-email" value="${lead.email}" /></td>
-            <td><input type="tel" class="edit-telefone" value="${lead.telefone}" /></td>
-            <td><input type="number" class="edit-valor" step="0.01" min="0" value="${Number(lead.valor).toFixed(2)}" /></td>
-            <td>
-              <select class="status-select edit-status">
-                <option value="Novo" ${lead.status === "Novo" ? "selected" : ""}>Novo</option>
-                <option value="Negociação" ${lead.status === "Negociação" ? "selected" : ""}>Negociação</option>
-                <option value="Ganho" ${lead.status === "Ganho" ? "selected" : ""}>Ganho</option>
-                <option value="Perdido" ${lead.status === "Perdido" ? "selected" : ""}>Perdido</option>
-              </select>
-            </td>
-            <td>${new Date(lead.criadoEm).toLocaleString("pt-BR")}</td>
-            <td>
-              <button class="action-btn salvar-btn" title="Salvar">💾</button>
-              <button class="action-btn cancelar-btn" title="Cancelar">❌</button>
-            </td>
-          </tr>`;
-        } else {
-          leadsTableBody.innerHTML += `
-          <tr data-id="${lead.id}">
-            <td>${lead.nome}</td>
-            <td>${lead.email}</td>
-            <td>${lead.telefone}</td>
-            <td>R$ ${Number(lead.valor).toLocaleString("pt-BR", {minimumFractionDigits:2})}</td>
-            <td>
-              <select class="status-select" data-id="${lead.id}">
-                <option value="Novo" ${lead.status === "Novo" ? "selected" : ""}>Novo</option>
-                <option value="Negociação" ${lead.status === "Negociação" ? "selected" : ""}>Negociação</option>
-                <option value="Ganho" ${lead.status === "Ganho" ? "selected" : ""}>Ganho</option>
-                <option value="Perdido" ${lead.status === "Perdido" ? "selected" : ""}>Perdido</option>
-              </select>
-            </td>
-            <td>${new Date(lead.criadoEm).toLocaleString("pt-BR")}</td>
-            <td>
-              <button class="action-btn editar-btn" title="Editar">✏️</button>
-            </td>
-          </tr>`;
-        }
-      });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape' });
 
-      // Adiciona eventos aos botões e selects
-      document.querySelectorAll(".editar-btn").forEach(btn => {
-        btn.onclick = () => {
-          if(editRowId) {
-            alert("Finalize a edição atual antes de editar outro lead.");
-            return;
-          }
-          const tr = btn.closest("tr");
-          editRowId = tr.getAttribute("data-id");
-          renderTabela();
-        };
-      });
+    pdf.setFontSize(22);
+    pdf.text("Raros Capital - Relatório de Leads", 14, 20);
 
-      document.querySelectorAll(".salvar-btn").forEach(btn => {
-        btn.onclick = async () => {
-          const tr = btn.closest("tr");
-          const id = tr.getAttribute("data-id");
-          const nome = tr.querySelector(".edit-nome").value.trim();
-          const email = tr.querySelector(".edit-email").value.trim();
-          const telefone = tr.querySelector(".edit-telefone").value.trim();
-          const valor = parseFloat(tr.querySelector(".edit-valor").value);
-          const status = tr.querySelector(".edit-status").value;
+    const total = leadsData.reduce((sum, lead) => sum + (Number(lead.valor) || 0), 0);
+    pdf.setFontSize(16);
+    pdf.text(`Valor Total de Solicitações: R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 180, 20);
 
-          if(!nome || !email || !telefone || isNaN(valor)){
-            alert("Por favor, preencha todos os campos corretamente.");
-            return;
-          }
+    // Gerar gráficos para PDF
+    // Como jsPDF não suporta Chart.js diretamente, vamos usar o método canvas.toDataURL
 
-          try {
-            await updateDoc(doc(db, "leads", id), {
-              nome,
-              email,
-              telefone,
-              valor,
-              status
-            });
-            const leadIndex = leads.findIndex(l => l.id === id);
-            leads[leadIndex] = { ...leads[leadIndex], nome, email, telefone, valor, status };
-            editRowId = null;
-            renderTabela();
-            atualizarTotal();
-            atualizarGraficos();
-          } catch (error) {
-            console.error("Erro ao salvar lead:", error);
-            alert("Erro ao salvar alterações.");
-          }
-        };
-      });
+    const canvasVals = document.getElementById('chartValores');
+    const canvasStatus = document.getElementById('chartStatus');
+    const canvasData = document.getElementById('chartBemDesejado');
 
-      document.querySelectorAll(".cancelar-btn").forEach(btn => {
-        btn.onclick = () => {
-          editRowId = null;
-          renderTabela();
-        };
-      });
+    const imgVals = canvasVals.toDataURL('image/png', 1.0);
+    const imgStatus = canvasStatus.toDataURL('image/png', 1.0);
+    const imgData = canvasData.toDataURL('image/png', 1.0);
 
-      document.querySelectorAll("select.status-select:not(.edit-status)").forEach(sel => {
-        sel.onchange = async () => {
-          const id = sel.getAttribute("data-id");
-          const novoStatus = sel.value;
-          try {
-            await updateDoc(doc(db, "leads", id), { status: novoStatus });
-            const leadIndex = leads.findIndex(l => l.id === id);
-            leads[leadIndex].status = novoStatus;
-            atualizarGraficos();
-          } catch (error) {
-            console.error("Erro ao atualizar status:", error);
-            alert("Erro ao atualizar status.");
-          }
-        };
-      });
-    }
+    // Desenhar imagens no PDF lado a lado, em tamanhos ajustados para caber numa página
+    const imgWidth = 90;
+    const imgHeight = 60;
 
-    // Atualizar valor total e cartão
-    function atualizarTotal() {
-      const total = leads.reduce((acc, lead) => acc + (Number(lead.valor) || 0), 0);
-      totalCard.textContent = `Valor Total: R$ ${total.toLocaleString("pt-BR", {minimumFractionDigits: 2})}`;
-      if(document.body.classList.contains("dark")){
-        totalCard.classList.add("dark");
-      } else {
-        totalCard.classList.remove("dark");
-      }
-    }
+    pdf.addImage(imgVals, 'PNG', 10, 30, imgWidth, imgHeight);
+    pdf.addImage(imgStatus, 'PNG', 105, 30, imgWidth, imgHeight);
+    pdf.addImage(imgData, 'PNG', 200, 30, imgWidth, imgHeight);
 
-    // Configurar gráficos
-    function atualizarGraficos() {
-      const ctxBem = document.getElementById("chartBem").getContext("2d");
-      const ctxMes = document.getElementById("chartMes").getContext("2d");
-      const ctxValor = document.getElementById("chartValor").getContext("2d");
+    // Adicionar tabela simples no PDF (nomes e valores)
+    pdf.setFontSize(12);
+    pdf.text("Leads:", 10, 100);
 
-      // Dados para chartBem (status)
-      const statusCounts = leads.reduce((acc, lead) => {
-        acc[lead.status] = (acc[lead.status] || 0) + 1;
-        return acc;
-      }, {});
-      const labelsBem = Object.keys(statusCounts);
-      const dataBem = Object.values(statusCounts);
+    const startY = 105;
+    const rowHeight = 8;
+    const maxRows = 10;
+    const columns = ['Nome', 'Email', 'WhatsApp', 'Valor (R$)', 'Data', 'Status'];
 
-      // Dados para chartMes (mês)
-      const mesesLabels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-      const mesesCount = Array(12).fill(0);
-      leads.forEach(lead => {
-        const dt = new Date(lead.criadoEm);
-        if (!isNaN(dt)) mesesCount[dt.getMonth()]++;
-      });
-
-      // Dados para chartValor (valores por status)
-      const valorPorStatus = leads.reduce((acc, lead) => {
-        acc[lead.status] = (acc[lead.status] || 0) + (Number(lead.valor) || 0);
-        return acc;
-      }, {});
-      const labelsValor = Object.keys(valorPorStatus);
-      const dataValor = Object.values(valorPorStatus);
-
-      // Destruir gráficos antigos se existirem para evitar duplicação
-      if(chartBem) chartBem.destroy();
-      if(chartMes) chartMes.destroy();
-      if(chartValor) chartValor.destroy();
-
-      const commonOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom", labels: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" } },
-          tooltip: { mode: "index", intersect: false },
-        },
-        scales: {
-          x: { ticks: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" } },
-          y: { ticks: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" }, beginAtZero: true }
-        }
-      };
-
-      chartBem = new Chart(ctxBem, {
-        type: "doughnut",
-        data: {
-          labels: labelsBem,
-          datasets: [{
-            label: "Status dos Leads",
-            data: dataBem,
-            backgroundColor: ["#f6c23e", "#1cc88a", "#36b9cc", "#e74a3b"],
-            borderColor: "#fff",
-            borderWidth: 2,
-          }],
-        },
-        options: {
-          ...commonOptions,
-          maintainAspectRatio: false,
-          aspectRatio: 1,
-        },
-      });
-
-      chartMes = new Chart(ctxMes, {
-        type: "bar",
-        data: {
-          labels: mesesLabels,
-          datasets: [{
-            label: "Leads por Mês",
-            data: mesesCount,
-            backgroundColor: "#4e73df",
-          }],
-        },
-        options: {
-          ...commonOptions,
-          scales: {
-            x: { ticks: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" } },
-            y: { beginAtZero: true, ticks: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" } },
-          }
-        },
-      });
-
-      chartValor = new Chart(ctxValor, {
-        type: "bar",
-        data: {
-          labels: labelsValor,
-          datasets: [{
-            label: "Valor Total por Status (R$)",
-            data: dataValor,
-            backgroundColor: ["#f6c23e", "#1cc88a", "#36b9cc", "#e74a3b"],
-          }],
-        },
-        options: {
-          ...commonOptions,
-          scales: {
-            x: { ticks: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" } },
-            y: { beginAtZero: true, ticks: { color: document.body.classList.contains("dark") ? "#ddd" : "#333" } },
-          }
-        },
-      });
-    }
-
-    // Exportar PDF com gráficos e total em uma página
-    async function exportarPDF() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF("p", "pt", "a4");
-
-      pdf.setFontSize(20);
-      pdf.setTextColor("#bfa34a");
-      pdf.text("Raros Capital", 40, 30);
-
-      pdf.setFontSize(16);
-      pdf.setTextColor("#8c7b2a");
-      pdf.text("Relatório de Leads", 40, 55);
-
-      // Total geral
-      const total = leads.reduce((acc, l) => acc + (Number(l.valor) || 0), 0);
-      pdf.setFontSize(14);
-      pdf.setTextColor("#222");
-      pdf.text(`Total geral: R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, 40, 80);
-
-      // Tamanhos reduzidos para caber lado a lado na página
-      const marginX = 40;
-      const chartWidth = (pdf.internal.pageSize.getWidth() - marginX * 2 - 20) / 3 * 0.8;
-      const chartHeight = chartWidth * 0.8;
-
-      const imgBem = chartBem.toBase64Image();
-      const imgMes = chartMes.toBase64Image();
-      const imgValor = chartValor.toBase64Image();
-
-      pdf.addImage(imgBem, "PNG", marginX, 100, chartWidth, chartHeight);
-      pdf.addImage(imgMes, "PNG", marginX + chartWidth + 10, 100, chartWidth, chartHeight);
-      pdf.addImage(imgValor, "PNG", marginX + (chartWidth + 10) * 2, 100, chartWidth, chartHeight);
-
-      pdf.save("relatorio_leads.pdf");
-    }
-
-    // Exportar clientes para CSV
-    function exportarClientesCSV() {
-      if (leads.length === 0) {
-        alert("Nenhum dado para exportar.");
-        return;
-      }
-
-      const header = ["Nome", "Email", "WhatsApp", "Valor (R$)", "Status", "Data"];
-      const rows = leads.map(l => [
-        l.nome,
-        l.email,
-        l.telefone,
-        Number(l.valor).toFixed(2).replace(".", ","),
-        l.status,
-        new Date(l.criadoEm).toLocaleString("pt-BR")
-      ]);
-
-      let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += header.join(";") + "\r\n";
-      rows.forEach(row => {
-        csvContent += row.join(";") + "\r\n";
-      });
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "clientes.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // Importar Excel e adicionar no Firestore
-    importFileInput.addEventListener("change", async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-
-        // jsonData esperado: [{nome, email, telefone, valor, status, criadoEm}]
-        for (const item of jsonData) {
-          // Validar e ajustar campos
-          if(!item.nome || !item.email) continue;
-          try {
-            await addDoc(collection(db, "leads"), {
-              nome: item.nome,
-              email: item.email,
-              telefone: item.telefone || "",
-              valor: Number(item.valor) || 0,
-              status: item.status || "Novo",
-              criadoEm: item.criadoEm ? new Date(item.criadoEm).toISOString() : new Date().toISOString()
-            });
-          } catch (error) {
-            console.error("Erro ao adicionar lead importado:", error);
-          }
-        }
-        alert("Importação concluída!");
-        importFileInput.value = null;
-        carregarLeads();
-      };
-      reader.readAsArrayBuffer(file);
+    // Cabeçalho da tabela
+    columns.forEach((col, i) => {
+      pdf.text(col, 10 + i * 40, startY);
     });
 
-    exportPDFBtn.addEventListener("click", exportarPDF);
-    exportClientesBtn.addEventListener("click", exportarClientesCSV);
+    // Linhas de dados
+    for(let i=0; i < Math.min(leadsData.length, maxRows); i++) {
+      const lead = leadsData[i];
+      const y = startY + rowHeight * (i+1);
+      pdf.text(lead.nome || '', 10, y);
+      pdf.text(lead.email || '', 50, y);
+      pdf.text(lead.telefone || '', 90, y);
+      pdf.text(`R$ ${Number(lead.valor || 0).toLocaleString('pt-BR', {minimumFractionDigits:2})}`, 130, y);
+      const dateStr = lead.criadoEm ? new Date(lead.criadoEm).toLocaleDateString('pt-BR') : '';
+      pdf.text(dateStr, 170, y);
+      pdf.text(lead.status || 'Novo', 210, y);
+    }
 
-    carregarLeads();
-  </script>
+    pdf.save('leads-relatorio.pdf');
+  });
+
+  // Alternar tema claro/escuro
+  window.toggleTheme = function() {
+    darkTheme = !darkTheme;
+    if(darkTheme) {
+      document.body.classList.add('dark');
+      themeToggleBtn.textContent = 'Tema Claro';
+    } else {
+      document.body.classList.remove('dark');
+      themeToggleBtn.textContent = 'Tema Escuro';
+    }
+  };
+
+</script>
+
 </body>
 </html>
