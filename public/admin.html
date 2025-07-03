@@ -5,212 +5,269 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Leads Raros Capital</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f8f8f8; margin: 0; padding: 20px; }
-    h1 { text-align: center; color: #333; }
-    table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-    th, td { border: 1px solid #ccc; padding: 12px; text-align: left; }
-    th { background-color: #bfa34a; color: white; }
-    tr:nth-child(even) { background-color: #f2f2f2; }
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #f5f5f5;
+      --accent: #bfa34a;
+      --danger: #d9534f;
+      --button-hover: #a18e3a;
+      --input-bg: #2a2a2a;
+      --input-border: #444;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: var(--accent);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    th, td {
+      border: 1px solid var(--input-border);
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #1c1c1c;
+    }
+
     button {
       padding: 6px 12px;
       font-size: 14px;
       cursor: pointer;
       border: none;
       border-radius: 4px;
-      margin-right: 5px;
+      margin-right: 4px;
+      transition: 0.3s;
     }
-    .btn-excluir { background-color: #d9534f; color: white; }
+
+    .btn-excluir { background-color: var(--danger); color: white; }
     .btn-editar { background-color: #0275d8; color: white; }
-    #authSection { text-align: center; margin-top: 100px; }
+    .btn-editar:hover { background-color: #0256a3; }
+    .btn-excluir:hover { background-color: #c9302c; }
+
+    #authSection {
+      text-align: center;
+      margin-top: 100px;
+    }
+
     input[type="password"] {
       padding: 10px;
       font-size: 16px;
-      margin-top: 10px;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
     }
 
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); display: none;
+      background: rgba(0,0,0,0.7); display: none;
       justify-content: center; align-items: center;
       z-index: 1000;
     }
 
     .modal {
-      background: white; padding: 20px; border-radius: 8px;
-      min-width: 320px; max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: var(--card);
+      padding: 20px;
+      border-radius: 8px;
+      min-width: 320px;
+      max-width: 400px;
     }
 
-    .modal h2 { margin-top: 0; }
-    .modal label { display: block; margin-top: 10px; font-weight: bold; }
+    .modal label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
     .modal input, .modal select {
-      width: 100%; padding: 8px; margin-top: 4px;
-      border: 1px solid #ccc; border-radius: 4px;
-      box-sizing: border-box;
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
     }
 
-    .modal-buttons { margin-top: 15px; text-align: right; }
-    .modal-buttons button {
-      margin-left: 10px; padding: 8px 14px;
-      font-size: 14px;
+    .modal input:invalid, .modal select:invalid {
+      border-color: red;
+    }
+
+    .modal-buttons {
+      margin-top: 15px;
+      text-align: right;
     }
 
     .btn-cancel { background: #6c757d; color: white; }
+    .btn-cancel:hover { background: #5a6268; }
     .btn-save { background: #5cb85c; color: white; }
+    .btn-save:hover { background: #449d44; }
   </style>
 </head>
 <body>
 
-  <!-- Login -->
-  <div id="authSection">
-    <h2>Área Restrita</h2>
-    <p>Digite a senha para acessar os leads:</p>
-    <input type="password" id="adminPass" placeholder="Senha de acesso" />
-    <br><br>
-    <button onclick="authAdmin()">🔐 Entrar</button>
+<div id="authSection">
+  <h2>🔐 Área Restrita</h2>
+  <p>Digite a senha para acessar os leads:</p>
+  <input type="password" id="adminPass" placeholder="Senha de acesso" />
+  <br><br>
+  <button onclick="authAdmin()">🔐 Entrar</button>
+</div>
+
+<div id="leadsSection" style="display:none;">
+  <h1>📋 Leads Recebidos</h1>
+  <table id="leadsTable">
+    <thead>
+      <tr>
+        <th>Nome</th><th>Email</th><th>WhatsApp</th><th>Bem</th><th>Valor</th><th>Data</th><th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>✏️ Editar Lead</h2>
+    <form id="editForm">
+      <label for="editNome">Nome</label>
+      <input type="text" id="editNome" required />
+      <label for="editEmail">Email</label>
+      <input type="email" id="editEmail" required />
+      <label for="editTelefone">WhatsApp</label>
+      <input type="text" id="editTelefone" required />
+      <label for="editBem">Bem</label>
+      <select id="editBem" required>
+        <option value="">-- selecione --</option>
+        <option value="Imóvel">Imóvel</option>
+        <option value="Automóvel">Automóvel</option>
+      </select>
+      <label for="editValor">Valor</label>
+      <input type="number" id="editValor" required />
+      <div class="modal-buttons">
+        <button type="button" class="btn-cancel" onclick="fecharModal()">🔙 Cancelar</button>
+        <button type="submit" class="btn-save">💾 Salvar</button>
+      </div>
+    </form>
   </div>
+</div>
 
-  <!-- Leads -->
-  <div id="leadsSection" style="display:none;">
-    <h1>Leads Recebidos</h1>
-    <table id="leadsTable">
-      <thead>
-        <tr>
-          <th>Nome</th><th>Email</th><th>WhatsApp</th><th>Bem</th><th>Valor (R$)</th><th>Data</th><th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, deleteDoc, doc, updateDoc
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  <!-- Modal -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2>✏️ Editar Lead</h2>
-      <form id="editForm">
-        <label for="editNome">Nome</label>
-        <input type="text" id="editNome" required />
-        <label for="editEmail">Email</label>
-        <input type="email" id="editEmail" required />
-        <label for="editTelefone">WhatsApp</label>
-        <input type="text" id="editTelefone" required />
-        <label for="editBem">Bem desejado</label>
-        <select id="editBem" required>
-          <option value="">-- selecione --</option>
-          <option value="Imóvel">Imóvel</option>
-          <option value="Automóvel">Automóvel</option>
-        </select>
-        <label for="editValor">Valor (somente números)</label>
-        <input type="number" id="editValor" min="1" step="0.01" required />
-        <div class="modal-buttons">
-          <button type="button" class="btn-cancel" onclick="fecharModal()">🔙 Cancelar</button>
-          <button type="submit" class="btn-save">💾 Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
+    authDomain: "site-raros.firebaseapp.com",
+    projectId: "site-raros",
+    storageBucket: "site-raros.appspot.com",
+    messagingSenderId: "610375954172",
+    appId: "1:610375954172:web:6c1cf57ef39d6e93a1f179",
+    measurementId: "G-S3ZLSEE4GP"
+  };
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      deleteDoc,
-      doc,
-      updateDoc
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  let editDocId = null;
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC2RmhrsTe-o1jE3pVbFLKDl11m8zFW7tk",
-      authDomain: "site-raros.firebaseapp.com",
-      projectId: "site-raros",
-      storageBucket: "site-raros.appspot.com",
-      messagingSenderId: "610375954172",
-      appId: "1:610375954172:web:6c1cf57ef39d6e93a1f179",
-      measurementId: "G-S3ZLSEE4GP"
-    };
+  window.authAdmin = async function () {
+    const senha = document.getElementById('adminPass').value;
+    if (senha !== "Cuchi@rtur2015") return alert("Senha incorreta!");
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('leadsSection').style.display = 'block';
+    carregarLeads();
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let editDocId = null;
-
-    window.authAdmin = async function () {
-      const senha = document.getElementById('adminPass').value;
-      if (senha !== "Cuchi@rtur2015") { alert("Senha incorreta!"); return; }
-      document.getElementById('authSection').style.display = 'none';
-      document.getElementById('leadsSection').style.display = 'block';
-      carregarLeads();
-    }
-
-    async function carregarLeads() {
-      const tbody = document.querySelector('#leadsTable tbody');
-      tbody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
-      try {
-        const snap = await getDocs(collection(db, "leads"));
-        let html = '';
-        snap.forEach(docSnap => {
-          const d = docSnap.data(), id = docSnap.id;
-          html += `
-            <tr>
-              <td>${d.nome}</td><td>${d.email}</td><td>${d.telefone}</td>
-              <td>${d.bem || '-'}</td><td>${Number(d.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-              <td>${new Date(d.criadoEm).toLocaleString('pt-BR')}</td>
-              <td>
-                <button class="btn-editar" onclick="abrirModal('${id}')">✏️</button>
-                <button class="btn-excluir" onclick="excluirLead('${id}')">❌</button>
-              </td>
-            </tr>`;
-        });
-        tbody.innerHTML = html || '<tr><td colspan="7">Nenhum lead encontrado.</td></tr>';
-      } catch (e) {
-        console.error(e);
-        tbody.innerHTML = '<tr><td colspan="7">Erro ao carregar dados.</td></tr>';
-      }
-    }
-
-    window.excluirLead = async function (id) {
-      if (!confirm("Excluir este lead?")) return;
-      await deleteDoc(doc(db, "leads", id));
-      alert("Lead excluído");
-      carregarLeads();
-    }
-
-    window.abrirModal = async function (id) {
-      editDocId = id;
+  async function carregarLeads() {
+    const tbody = document.querySelector('#leadsTable tbody');
+    tbody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
+    try {
       const snap = await getDocs(collection(db, "leads"));
-      const docSnap = snap.docs.find(d => d.id === id);
-      const d = docSnap.data();
-      document.getElementById('editNome').value = d.nome;
-      document.getElementById('editEmail').value = d.email;
-      document.getElementById('editTelefone').value = d.telefone;
-      document.getElementById('editBem').value = d.bem || '';
-      document.getElementById('editValor').value = d.valor;
-      document.getElementById('modalOverlay').style.display = 'flex';
+      let html = '';
+      snap.forEach(docSnap => {
+        const d = docSnap.data(), id = docSnap.id;
+        html += `
+          <tr>
+            <td>${d.nome}</td><td>${d.email}</td><td>${d.telefone}</td>
+            <td>${d.bem || '-'}</td>
+            <td>R$ ${Number(d.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+            <td>${new Date(d.criadoEm).toLocaleString('pt-BR')}</td>
+            <td>
+              <button class="btn-editar" onclick="abrirModal('${id}')">✏️</button>
+              <button class="btn-excluir" onclick="excluirLead('${id}')">❌</button>
+            </td>
+          </tr>`;
+      });
+      tbody.innerHTML = html || '<tr><td colspan="7">Nenhum lead encontrado.</td></tr>';
+    } catch (e) {
+      console.error(e);
+      tbody.innerHTML = '<tr><td colspan="7">Erro ao carregar dados.</td></tr>';
     }
+  }
 
-    window.fecharModal = function () {
-      document.getElementById('modalOverlay').style.display = 'none';
-      editDocId = null;
-    }
+  window.excluirLead = async function (id) {
+    if (!confirm("Excluir este lead?")) return;
+    await deleteDoc(doc(db, "leads", id));
+    alert("Lead excluído.");
+    carregarLeads();
+  }
 
-    document.getElementById('editForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      if (!editDocId) return;
-      const data = {
-        nome: document.getElementById('editNome').value.trim(),
-        email: document.getElementById('editEmail').value.trim(),
-        telefone: document.getElementById('editTelefone').value.trim(),
-        bem: document.getElementById('editBem').value,
-        valor: parseFloat(document.getElementById('editValor').value)
-      };
-      await updateDoc(doc(db, "leads", editDocId), data);
-      alert("Lead atualizado com sucesso!");
-      fecharModal();
-      carregarLeads();
-    });
-  </script>
+  window.abrirModal = async function (id) {
+    const d = (await getDocs(collection(db, "leads"))).docs.find(doc => doc.id === id)?.data();
+    if (!d) return;
+    editDocId = id;
+    document.getElementById('editNome').value = d.nome || '';
+    document.getElementById('editEmail').value = d.email || '';
+    document.getElementById('editTelefone').value = d.telefone || '';
+    document.getElementById('editBem').value = d.bem || '';
+    document.getElementById('editValor').value = d.valor || '';
+    document.getElementById('modalOverlay').style.display = 'flex';
+  }
+
+  window.fecharModal = function () {
+    document.getElementById('modalOverlay').style.display = 'none';
+    editDocId = null;
+  }
+
+  document.getElementById('editForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!editDocId) return;
+    const data = {
+      nome: document.getElementById('editNome').value.trim(),
+      email: document.getElementById('editEmail').value.trim(),
+      telefone: document.getElementById('editTelefone').value.trim(),
+      bem: document.getElementById('editBem').value,
+      valor: parseFloat(document.getElementById('editValor').value)
+    };
+    await updateDoc(doc(db, "leads", editDocId), data);
+    alert("Lead atualizado com sucesso!");
+    fecharModal();
+    carregarLeads();
+  });
+</script>
 
 </body>
 </html>
