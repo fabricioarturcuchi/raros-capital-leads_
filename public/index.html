@@ -50,7 +50,7 @@
       color: var(--preto);
     }
 
-    input, button {
+    input, select, button {
       width: 100%;
       padding: 12px;
       margin-top: 6px;
@@ -60,7 +60,7 @@
       font-weight: 600;
     }
 
-    input:focus {
+    input:focus, select:focus {
       border-color: var(--dourado-escuro);
       outline: none;
       box-shadow: 0 0 5px var(--dourado-escuro);
@@ -101,6 +101,13 @@
 
       <label for="phone">WhatsApp (com DDD) *</label>
       <input type="tel" id="phone" name="phone" placeholder="(99) 99999-9999" maxlength="15" required />
+
+      <label for="bem">Bem desejado *</label>
+      <select id="bem" name="bem" required>
+        <option value="" disabled selected>Selecione uma opção</option>
+        <option value="Imóvel">Imóvel</option>
+        <option value="Automóvel">Automóvel</option>
+      </select>
 
       <label for="valor">Valor do Bem (R$) *</label>
       <input type="text" id="valor" name="valor" placeholder="R$ 0,00" required />
@@ -153,9 +160,10 @@
       const nome = form.name.value.trim();
       const email = form.email.value.trim();
       const telefone = form.phone.value.trim();
+      const bem = form.bem.value;
       let valorStr = form.valor.value.trim();
 
-      if (!nome || !email || !telefone || !valorStr) {
+      if (!nome || !email || !telefone || !valorStr || !bem) {
         alert("Por favor, preencha todos os campos obrigatórios.");
         return;
       }
@@ -172,6 +180,7 @@
         nome,
         email,
         telefone,
+        bem,
         valor,
         criadoEm: new Date().toISOString()
       };
